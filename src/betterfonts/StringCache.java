@@ -17,10 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>..
  */
 
-package net.minecraft.src.betterfonts;
+package betterfonts;
 
-import net.minecraft.src.RenderEngine;
-import net.minecraft.src.Tessellator;
+import net.minecraft.client.renderer.Tessellator;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 import java.util.ArrayList;
@@ -167,7 +166,7 @@ public class StringCache
             for (int index = 0; index < length; index++)
             {
                 char c = str.charAt(index);
-                if(c >= '0' && c <= '9' && !colorCode)
+                if (c >= '0' && c <= '9' && !colorCode)
                 {
                     c = '0';
                 }
@@ -192,7 +191,7 @@ public class StringCache
              * equals() method. Presumably it happens between computing a hash code for the weakly referenced Key object
              * while it still exists and calling its equals() method after it was garbage collected.
              */
-            if(o == null)
+            if (o == null)
             {
                 return false;
             }
@@ -201,7 +200,7 @@ public class StringCache
             String other = o.toString();
             int length = str.length();
 
-            if(length != other.length())
+            if (length != other.length())
             {
                 return false;
             }
@@ -213,12 +212,12 @@ public class StringCache
              */
             boolean colorCode = false;
 
-            for(int index = 0; index < length; index++)
+            for (int index = 0; index < length; index++)
             {
                 char c1 = str.charAt(index);
                 char c2 = other.charAt(index);
 
-                if(c1 != c2 && (c1 < '0' || c1 > '9' || c2 < '0' || c2 > '9' || colorCode))
+                if (c1 != c2 && (c1 < '0' || c1 > '9' || c2 < '0' || c2 > '9' || colorCode))
                 {
                     return false;
                 }
@@ -379,9 +378,9 @@ public class StringCache
         /* Need to cache each font style combination; the digitGlyphsReady = false disabled the normal glyph substitution mechanism */
         digitGlyphsReady = false;
         digitGlyphs[Font.PLAIN] = cacheString("0123456789").glyphs;
-        digitGlyphs[Font.BOLD] = cacheString("§l0123456789").glyphs;
-        digitGlyphs[Font.ITALIC] = cacheString("§o0123456789").glyphs;
-        digitGlyphs[Font.BOLD | Font.ITALIC] = cacheString("§l§o0123456789").glyphs;
+        digitGlyphs[Font.BOLD] = cacheString("ï¿½l0123456789").glyphs;
+        digitGlyphs[Font.ITALIC] = cacheString("ï¿½o0123456789").glyphs;
+        digitGlyphs[Font.BOLD | Font.ITALIC] = cacheString("ï¿½lï¿½o0123456789").glyphs;
         digitGlyphsReady = true;
     }
 
@@ -405,7 +404,7 @@ public class StringCache
     public int renderString(String str, int startX, int startY, int initialColor, boolean shadowFlag)
     {
         /* Check for invalid arguments */
-        if(str == null || str.isEmpty())
+        if (str == null || str.isEmpty())
         {
             return 0;
         }
@@ -436,7 +435,7 @@ public class StringCache
          * function doesn't try to save/restore the blending state. Hopefully everything else that depends on blending in Minecraft
          * will set its own state as needed.
          */
-        if(antiAliasEnabled)
+        if (antiAliasEnabled)
         {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -450,7 +449,7 @@ public class StringCache
         /* The currently active font syle is needed to select the proper ASCII digit style for fast replacement */
         int fontStyle = Font.PLAIN;
 
-        for(int glyphIndex = 0, colorIndex = 0; glyphIndex < entry.glyphs.length; glyphIndex++)
+        for (int glyphIndex = 0, colorIndex = 0; glyphIndex < entry.glyphs.length; glyphIndex++)
         {
             /*
              * If the original string had a color code at this glyph's position, then change the current GL color that gets added
@@ -458,7 +457,7 @@ public class StringCache
              * of the original color passed into this function will remain. The while loop handles multiple consecutive color codes,
              * in which case only the last such color code takes effect.
              */
-            while(colorIndex < entry.colors.length && entry.glyphs[glyphIndex].stringIndex >= entry.colors[colorIndex].stringIndex)
+            while (colorIndex < entry.colors.length && entry.glyphs[glyphIndex].stringIndex >= entry.colors[colorIndex].stringIndex)
             {
                 color = applyColorCode(entry.colors[colorIndex].colorCode, initialColor, shadowFlag);
                 fontStyle = entry.colors[colorIndex].fontStyle;
@@ -477,7 +476,7 @@ public class StringCache
              * of the width mismatch.
              */
             char c = str.charAt(glyph.stringIndex);
-            if(c >= '0' && c <= '9')
+            if (c >= '0' && c <= '9')
             {
                 int oldWidth = texture.width;
                 texture = digitGlyphs[fontStyle][c - '0'].texture;
@@ -490,7 +489,7 @@ public class StringCache
              * Tessellator's vertex array must be drawn before switching textures, otherwise they would erroneously use the new
              * texture as well.
              */
-            if(boundTextureName != texture.textureName)
+            if (boundTextureName != texture.textureName)
             {
                 tessellator.draw();
                 tessellator.startDrawingQuads();
@@ -516,7 +515,7 @@ public class StringCache
         tessellator.draw();
 
         /* Draw strikethrough and underlines if the string uses them anywhere */
-        if(entry.specialRender)
+        if (entry.specialRender)
         {
             int renderStyle = 0;
 
@@ -526,14 +525,14 @@ public class StringCache
             tessellator.startDrawingQuads();
             tessellator.setColorRGBA(color >> 16 & 0xff, color >> 8 & 0xff, color & 0xff, color >> 24 & 0xff);
 
-            for(int glyphIndex = 0, colorIndex = 0; glyphIndex < entry.glyphs.length; glyphIndex++)
+            for (int glyphIndex = 0, colorIndex = 0; glyphIndex < entry.glyphs.length; glyphIndex++)
             {
                 /*
                  * If the original string had a color code at this glyph's position, then change the current GL color that gets added
                  * to the vertex array. The while loop handles multiple consecutive color codes, in which case only the last such
                  * color code takes effect.
                  */
-                while(colorIndex < entry.colors.length && entry.glyphs[glyphIndex].stringIndex >= entry.colors[colorIndex].stringIndex)
+                while (colorIndex < entry.colors.length && entry.glyphs[glyphIndex].stringIndex >= entry.colors[colorIndex].stringIndex)
                 {
                     color = applyColorCode(entry.colors[colorIndex].colorCode, initialColor, shadowFlag);
                     renderStyle = entry.colors[colorIndex].renderStyle;
@@ -547,7 +546,7 @@ public class StringCache
                 int glyphSpace = glyph.advance - glyph.texture.width;
 
                 /* Draw underline under glyph if the style is enabled */
-                if((renderStyle & ColorCode.UNDERLINE) != 0)
+                if ((renderStyle & ColorCode.UNDERLINE) != 0)
                 {
                     /* The divide by 2.0F is needed to align with the scaled GUI coordinate system; startX/startY are already scaled */
                     float x1 = startX + (glyph.x - glyphSpace) / 2.0F;
@@ -562,7 +561,7 @@ public class StringCache
                 }
 
                 /* Draw strikethrough in the middle of glyph if the style is enabled */
-                if((renderStyle & ColorCode.STRIKETHROUGH) != 0)
+                if ((renderStyle & ColorCode.STRIKETHROUGH) != 0)
                 {
                     /* The divide by 2.0F is needed to align with the scaled GUI coordinate system; startX/startY are already scaled */
                     float x1 = startX + (glyph.x - glyphSpace) / 2.0F;
@@ -582,7 +581,6 @@ public class StringCache
             GL11.glEnable(GL11.GL_TEXTURE_2D);
         }
 
-
         /* Return total horizontal advance (slightly wider than the bounding box, but close enough for centering strings) */
         return entry.advance / 2;
     }
@@ -596,7 +594,7 @@ public class StringCache
     public int getStringWidth(String str)
     {
         /* Check for invalid arguments */
-        if(str == null || str.isEmpty())
+        if (str == null || str.isEmpty())
         {
             return 0;
         }
@@ -621,7 +619,7 @@ public class StringCache
     private int sizeString(String str, int width, boolean breakAtSpaces)
     {
         /* Check for invalid arguments */
-        if(str == null || str.isEmpty())
+        if (str == null || str.isEmpty())
         {
             return 0;
         }
@@ -637,17 +635,17 @@ public class StringCache
 
         /* Add up the individual advance of each glyph until it exceeds the specified width */
         int advance = 0, index = 0;
-        while(index < glyphs.length && advance <= width)
+        while (index < glyphs.length && advance <= width)
         {
             /* Keep track of spaces if breakAtSpaces it set */
-            if(breakAtSpaces)
+            if (breakAtSpaces)
             {
                 char c = str.charAt(glyphs[index].stringIndex);
-                if(c == ' ')
+                if (c == ' ')
                 {
                     wsIndex = index;
                 }
-                else if(c == '\n')
+                else if (c == '\n')
                 {
                     wsIndex = index;
                     break;
@@ -659,7 +657,7 @@ public class StringCache
         }
 
         /* Avoid splitting individual words if breakAtSpaces set; same test condition as in Minecraft's FontRenderer */
-        if(index < glyphs.length && wsIndex != -1 && wsIndex < index)
+        if (index < glyphs.length && wsIndex != -1 && wsIndex < index)
         {
             index = wsIndex;
         }
@@ -693,7 +691,7 @@ public class StringCache
         int length = sizeString(str, width, false);
         str = str.substring(0, length);
 
-        if(reverse)
+        if (reverse)
         {
             str = (new StringBuilder(str)).reverse().toString();
         }
@@ -713,7 +711,7 @@ public class StringCache
     private int applyColorCode(int colorCode, int color, boolean shadowFlag)
     {
         /* A -1 color code indicates a reset to the initial color passed into renderString() */
-        if(colorCode != -1)
+        if (colorCode != -1)
         {
             colorCode = shadowFlag ? colorCode + 16 : colorCode;
             color = colorTable[colorCode] & 0xffffff | color & 0xff000000;
@@ -746,7 +744,7 @@ public class StringCache
         Entry entry = null;
 
         /* Don't perform a cache lookup from other threads because the stringCache is not synchronized */
-        if(mainThread == Thread.currentThread())
+        if (mainThread == Thread.currentThread())
         {
             /* Re-use existing lookupKey to avoid allocation overhead on the critical rendering path */
             lookupKey.str = str;
@@ -756,7 +754,7 @@ public class StringCache
         }
 
         /* If string is not cached (or not on main thread) then layout the string */
-        if(entry == null)
+        if (entry == null)
         {
             /* layoutGlyphVector() requires a char[] so create it here and pass it around to avoid duplication later on */
             char text[] = str.toCharArray();
@@ -767,7 +765,7 @@ public class StringCache
 
             /* Layout the entire string, splitting it up by color codes and the Unicode bidirectional algorithm */
             List<Glyph> glyphList = new ArrayList();
-            entry.advance = (int) layoutBidiString(glyphList, text, 0, length, entry.colors);
+            entry.advance = (int)layoutBidiString(glyphList, text, 0, length, entry.colors);
 
             /* Convert the accumulated Glyph list to an array for efficient storage */
             entry.glyphs = new Glyph[glyphList.size()];
@@ -781,7 +779,7 @@ public class StringCache
 
             /* Do some post-processing on each Glyph object */
             int colorIndex = 0, shift = 0;
-            for(int glyphIndex = 0; glyphIndex < entry.glyphs.length; glyphIndex++)
+            for (int glyphIndex = 0; glyphIndex < entry.glyphs.length; glyphIndex++)
             {
                 Glyph glyph = entry.glyphs[glyphIndex];
 
@@ -791,7 +789,7 @@ public class StringCache
                  * stringIndex can now be compared against the color stringIndex during rendering. It also allows lookups of ASCII
                  * digits in the original string for fast glyph replacement during rendering.
                  */
-                while(colorIndex < entry.colors.length && glyph.stringIndex + shift >= entry.colors[colorIndex].stringIndex)
+                while (colorIndex < entry.colors.length && glyph.stringIndex + shift >= entry.colors[colorIndex].stringIndex)
                 {
                     shift += 2;
                     colorIndex++;
@@ -803,7 +801,7 @@ public class StringCache
              * Do not actually cache the string when called from other threads because GlyphCache.cacheGlyphs() will not have been called
              * and the cache entry does not contain any texture data needed for rendering.
              */
-            if(mainThread == Thread.currentThread())
+            if (mainThread == Thread.currentThread())
             {
                 /* Wrap the string in a Key object (to change how ASCII digits are compared) and cache it along with the newly generated Entry */
                 key = new Key();
@@ -816,7 +814,7 @@ public class StringCache
         }
 
         /* Do not access weakRefCache from other threads since it is unsynchronized, and for a newly created entry, the keyRef is null */
-        if(mainThread == Thread.currentThread())
+        if (mainThread == Thread.currentThread())
         {
             /*
              * Add the String passed into this method to the stringWeakMap so it keeps the Key reference live as long as the String is in use.
@@ -825,7 +823,7 @@ public class StringCache
              * will still be live because of the strong reference created by the "key" variable.
              */
             Key oldKey = entry.keyRef.get();
-            if(oldKey != null)
+            if (oldKey != null)
             {
                 weakRefCache.put(str, oldKey);
             }
@@ -856,7 +854,7 @@ public class StringCache
         byte colorCode = -1;
 
         /* Search for section mark characters indicating the start of a color code (but only if followed by at least one character) */
-        while((next = str.indexOf('\u00A7', start)) != -1 && next + 1 < str.length())
+        while ((next = str.indexOf('\u00A7', start)) != -1 && next + 1 < str.length())
         {
             /*
              * Remove the two char color code from text[] by shifting the remaining data in the array over on top of it.
@@ -867,37 +865,37 @@ public class StringCache
             System.arraycopy(text, next - shift + 2, text, next - shift, text.length - next - 2);
 
             /* Decode escape code used in the string and change current font style / color based on it */
-            int code = "0123456789abcdefklmnor".indexOf(Character.toLowerCase(str.charAt(next + 1)));
-            switch(code)
+            int symbol = Character.toLowerCase(str.charAt(next + 1));
+            switch (symbol)
             {
-                /* Random style; TODO: NOT IMPLEMENTED YET */
-                case 16:
+            /* Random style; TODO: NOT IMPLEMENTED YET */
+                case 'k':
                     break;
 
                 /* Bold style */
-                case 17:
+                case 'l':
                     fontStyle |= Font.BOLD;
                     break;
 
                 /* Strikethrough style */
-                case 18:
+                case 'm':
                     renderStyle |= ColorCode.STRIKETHROUGH;
                     cacheEntry.specialRender = true;
                     break;
 
                 /* Underline style */
-                case 19:
+                case 'n':
                     renderStyle |= ColorCode.UNDERLINE;
                     cacheEntry.specialRender = true;
                     break;
 
                 /* Italic style */
-                case 20:
+                case 'o':
                     fontStyle |= Font.ITALIC;
                     break;
 
                 /* Plain style */
-                case 21:
+                case 'r':
                     fontStyle = Font.PLAIN;
                     renderStyle = 0;
                     colorCode = -1; // This may be a bug in Minecraft's original FontRenderer
@@ -905,11 +903,11 @@ public class StringCache
 
                 /* Otherwise, must be a color code or some other unsupported code */
                 default:
-                    if(code >= 0 && code <= 15)
+                    if (symbol >= '0' && symbol <= 'f')
                     {
-                        colorCode = (byte) code;
+                        colorCode = (byte)"0123456789abcdef".indexOf(symbol);
                         fontStyle = Font.PLAIN; // This may be a bug in Minecraft's original FontRenderer
-                        renderStyle = 0;        // This may be a bug in Minecraft's original FontRenderer
+                        renderStyle = 0; // This may be a bug in Minecraft's original FontRenderer
                     }
                     break;
             }
@@ -951,13 +949,13 @@ public class StringCache
         int advance = 0;
 
         /* Avoid performing full bidirectional analysis if text has no "strong" right-to-left characters */
-        if(Bidi.requiresBidi(text, start, limit))
+        if (Bidi.requiresBidi(text, start, limit))
         {
             /* Note that while requiresBidi() uses start/limit the Bidi constructor uses start/length */
             Bidi bidi = new Bidi(text, start, null, 0, limit - start, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
 
             /* If text is entirely right-to-left, then insert an EntryText node for the entire string */
-            if(bidi.isRightToLeft())
+            if (bidi.isRightToLeft())
             {
                 return layoutStyle(glyphList, text, start, limit, Font.LAYOUT_RIGHT_TO_LEFT, advance, colors);
             }
@@ -970,9 +968,9 @@ public class StringCache
                 Integer ranges[] = new Integer[runCount];
 
                 /* Reorder contiguous runs of text into their display order from left to right */
-                for(int index = 0; index < runCount; index++)
+                for (int index = 0; index < runCount; index++)
                 {
-                    levels[index] = (byte) bidi.getRunLevel(index);
+                    levels[index] = (byte)bidi.getRunLevel(index);
                     ranges[index] = new Integer(index);
                 }
                 Bidi.reorderVisually(levels, 0, ranges, 0, runCount);
@@ -982,14 +980,14 @@ public class StringCache
                  * the horizontal advance between each run of text, so that the glyphs in each run can be assigned a position relative
                  * to the start of the entire string and not just relative to that run.
                  */
-                for(int visualIndex = 0; visualIndex < runCount; visualIndex++)
+                for (int visualIndex = 0; visualIndex < runCount; visualIndex++)
                 {
                     int logicalIndex = ranges[visualIndex];
 
                     /* An odd numbered level indicates right-to-left ordering */
                     int layoutFlag = (bidi.getRunLevel(logicalIndex) & 1) == 1 ? Font.LAYOUT_RIGHT_TO_LEFT : Font.LAYOUT_LEFT_TO_RIGHT;
                     advance = layoutStyle(glyphList, text, start + bidi.getRunStart(logicalIndex), start + bidi.getRunLimit(logicalIndex),
-                        layoutFlag, advance, colors);
+                            layoutFlag, advance, colors);
                 }
             }
 
@@ -1015,24 +1013,24 @@ public class StringCache
          * of the first ColorCode with a stripIndex > start. In that case, colorIndex is adjusted to select the immediately preceding
          * ColorCode whose stripIndex < start.
          */
-        if(colorIndex < 0)
+        if (colorIndex < 0)
         {
             colorIndex = -colorIndex - 2;
         }
 
         /* Break up the string into segments, where each segment has the same font style in use */
-        while(start < limit)
+        while (start < limit)
         {
             int next = limit;
 
             /* In case of multiple consecutive color codes with the same stripIndex, select the last one which will have active font style */
-            while(colorIndex >= 0 && colorIndex < (colors.length - 1) && colors[colorIndex].stripIndex == colors[colorIndex + 1].stripIndex)
+            while (colorIndex >= 0 && colorIndex < (colors.length - 1) && colors[colorIndex].stripIndex == colors[colorIndex + 1].stripIndex)
             {
                 colorIndex++;
             }
 
             /* If an actual ColorCode object was found (colorIndex within the array), use its fontStyle for layout and render */
-            if(colorIndex >= 0 && colorIndex < colors.length)
+            if (colorIndex >= 0 && colorIndex < colors.length)
             {
                 currentFontStyle = colors[colorIndex].fontStyle;
             }
@@ -1041,9 +1039,9 @@ public class StringCache
              * Search for the next ColorCode that uses a different fontStyle than the current one. If found, the stripIndex of that
              * new code is the split point where the string must be split into a separately styled segment.
              */
-            while(++colorIndex < colors.length)
+            while (++colorIndex < colors.length)
             {
-                if(colors[colorIndex].fontStyle != currentFontStyle)
+                if (colors[colorIndex].fontStyle != currentFontStyle)
                 {
                     next = colors[colorIndex].stripIndex;
                     break;
@@ -1084,11 +1082,11 @@ public class StringCache
          * problem where the digit glyphs have to be initially cached and the digitGlyphs[] array initialized without replacing
          * every digit with '0'.
          */
-        if(digitGlyphsReady)
+        if (digitGlyphsReady)
         {
-            for(int index = start; index < limit; index++)
+            for (int index = start; index < limit; index++)
             {
-                if(text[index] >= '0' && text[index] <= '9')
+                if (text[index] >= '0' && text[index] <= '9')
                 {
                     text[index] = '0';
                 }
@@ -1096,13 +1094,13 @@ public class StringCache
         }
 
         /* Break the string up into segments, where each segment can be displayed using a single font */
-        while(start < limit)
+        while (start < limit)
         {
             Font font = glyphCache.lookupFont(text, start, limit, style);
             int next = font.canDisplayUpTo(text, start, limit);
 
             /* canDisplayUpTo returns -1 if the entire string range is supported by this font */
-            if(next == -1)
+            if (next == -1)
             {
                 next = limit;
             }
@@ -1112,7 +1110,7 @@ public class StringCache
              * one unsupported character (which will use the font's "missing glyph code"), then retry the lookup again at the
              * next character after that.
              */
-            if(next == start)
+            if (next == start)
             {
                 next++;
             }
@@ -1147,7 +1145,7 @@ public class StringCache
          * cacheString() will also not insert the entry into the stringCache since it may be incomplete if lookupGlyph()
          * returns null for any glyphs not yet stored in the glyph cache.
          */
-        if(mainThread == Thread.currentThread())
+        if (mainThread == Thread.currentThread())
         {
             glyphCache.cacheGlyphs(font, text, start, limit, layoutFlags);
         }
@@ -1163,12 +1161,12 @@ public class StringCache
          */
         Glyph glyph = null;
         int numGlyphs = vector.getNumGlyphs();
-        for(int index = 0; index < numGlyphs; index++)
+        for (int index = 0; index < numGlyphs; index++)
         {
             Point position = vector.getGlyphPixelBounds(index, null, advance, 0).getLocation();
 
             /* Compute horizontal advance for the previous glyph based on this glyph's position */
-            if(glyph != null)
+            if (glyph != null)
             {
                 glyph.advance = position.x - glyph.x;
             }
@@ -1186,8 +1184,8 @@ public class StringCache
         }
 
         /* Compute the advance position of the last glyph (or only glyph) since it can't be done by the above loop */
-        advance += (int) vector.getGlyphPosition(numGlyphs).getX();
-        if(glyph != null)
+        advance += (int)vector.getGlyphPosition(numGlyphs).getX();
+        if (glyph != null)
         {
             glyph.advance = advance - glyph.x;
         }

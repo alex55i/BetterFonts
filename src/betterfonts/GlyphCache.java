@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>..
  */
 
-package net.minecraft.src.betterfonts;
+package betterfonts;
 
-import net.minecraft.src.GLAllocation;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
@@ -39,6 +38,8 @@ import java.awt.RenderingHints;
 import java.awt.Rectangle;
 import java.awt.AlphaComposite;
 import java.awt.GraphicsEnvironment;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -118,7 +119,7 @@ public class GlyphCache
     private IntBuffer imageBuffer = ByteBuffer.allocateDirect(4 * TEXTURE_WIDTH * TEXTURE_HEIGHT).order(ByteOrder.BIG_ENDIAN).asIntBuffer();
 
     /** A single integer direct buffer with native byte ordering used for returning values from glGenTextures(). */
-    private IntBuffer singleIntBuffer = GLAllocation.createDirectIntBuffer(1);
+    private IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
 
     /** List of all available physical fonts on the system. Used by lookupFont() to find alternate fonts. */
     private List<Font> allFonts = Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts());
@@ -575,7 +576,7 @@ public class GlyphCache
 
         /* Allocate new OpenGL texure */
         singleIntBuffer.clear();
-        GLAllocation.generateTextureNames(singleIntBuffer);
+        GL11.glGenTextures(singleIntBuffer);
         textureName = singleIntBuffer.get(0);
 
         /* Load imageBuffer with pixel data ready for transfer to OpenGL texture */

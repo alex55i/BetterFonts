@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>..
  */
 
-package net.minecraft.src.betterfonts;
+package betterfonts;
 
 import net.minecraft.client.Minecraft;
 import java.util.Properties;
@@ -54,7 +54,7 @@ public class ConfigParser
 
         try
         {
-            FileInputStream cfgFile = new FileInputStream(Minecraft.getMinecraftDir() + fileName);
+            FileInputStream cfgFile = new FileInputStream(Minecraft.getMinecraft().mcDataDir + fileName);
             cfgProps.load(cfgFile);
             cfgFile.close();
             success = true;
