@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BetterFonts" default="build">
+  <target name="buildenvsetup">
+    <property name="version.minecraft" value="1.6.2" />
+    <property name="mcp.home" location="${basedir}/forge/mcp" />
+    <property name="bf.srcdir" location="${basedir}/src" />
+    <property name="obf.bf.srcdir" location="${basedir}/src-obf" />
+    <property name="bf.resdir" location="${basedir}/res" />
+    <property name="obf.bf.resdir" location="${basedir}/res-obf" />
+    <property name="bf.bindir" location="${basedir}/bin" />
+    <property name="bf.distdir" location="${basedir}/dist" />
+    <property name="client.mcp.obfoutput" location="${mcp.home}/reobf/minecraft" />
+    <property name="client.mcp.srcdir" location="${mcp.home}/src/minecraft" />
+
+    <condition property="python.exe" value="${basedir}/forge/fml/python/python_fml" else="python">
+      <os family="Windows" />
+    </condition>
+  </target>
+
+  <target name="build">
+    <antcall target="makeobfuscatedbins" />
+    <antcall target="makejar" />
+  </target>
+
+  <target name="makeobfuscatedbins" depends="buildenvsetup">
+    <antcall target="obfuscatesrc" />
+    <copy todir="${client.mcp.srcdir}">
+      <fileset dir="${obf.bf.srcdir}" />
+    </copy>
+    <exec executable="${python.exe}" dir="${mcp.home}" failonerror="true">
+      <arg value="${mcp.home}/runtime/recompile.py" />
+    </exec>
+    <exec executable="${python.exe}" dir="${mcp.home}" failonerror="true">
+      <arg value="${mcp.home}/runtime/reobfuscate.py" />
+    </exec>
+    <delete verbose="true">
+      <fileset dir="${client.mcp.srcdir}" >
+        <present present="both" targetdir="${obf.bf.srcdir}"/>
+      </fileset>
+    </delete>
+    <delete dir="${bf.bindir}" />
+    <copy todir="${bf.bindir}">
+      <fileset dir="${client.mcp.obfoutput}" />
+    </copy>
+    <copy todir="${bf.bindir}">
+      <fileset dir="${obf.bf.resdir}" />
+    </copy>
+    <delete dir="${obf.bf.srcdir}" />
+    <delete dir="${obf.bf.resdir}" />
+  </target>
+
+  <target name="makejar" depends="buildenvsetup">
+    <zip destfile="${bf.distdir}/betterfonts-${version.minecraft}.jar" basedir="${bf.bindir}" />
+    <delete dir="${bf.bindir}" />
+  </target>
+
+  <target name="obfuscatesrc">
+    <delete dir="${obf.bf.srcdir}" />
+    <copy todir="${obf.bf.srcdir}">
+      <fileset dir="${bf.srcdir}" />
+    </copy>
+    <delete dir="${obf.bf.resdir}" />
+    <copy todir="${obf.bf.resdir}">
+      <fileset dir="${bf.resdir}" />
+    </copy>
+    <exec executable="${python.exe}" dir="${basedir}" failonerror="true">
+      <arg value="${basedir}/replacesrc.py" />
+      <arg value="${obf.bf.srcdir}" />
+    </exec>
+    <exec executable="${python.exe}" dir="${basedir}" failonerror="true">
+      <arg value="${basedir}/replacesrc.py" />
+      <arg value="${obf.bf.resdir}" />
+    </exec>
+  </target>
+</project>

@@ -130,6 +130,8 @@ public class StringCache
      */
     private Thread mainThread;
 
+    public boolean dropShadowEnabled;
+
     /**
      * Wraps a String and acts as the key into stringCache. The hashCode() and equals() methods consider all ASCII digits
      * to be equal when hashing and comparing Key objects together. Therefore, Strings which only differ in their digits will

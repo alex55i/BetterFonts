@@ -2,9 +2,6 @@
 
 The BetterFonts mod adds TrueType/OpenType font support for Minecraft. This mod will use the fonts installed on your system for drawing text instead of the builtin bitmap fonts that come with Minecraft. Languages such as Arabic and Hindi look much better with this mod since both require complex layout that the bitmap fonts simply can't provide. All in-game text will change to use the new fonts including GUIs, the F3 debug screen, chat, and even signs. This mod should have little or no impact on performance.
 
-**Unicode Text in Chat:**
-Starting with 1.3.2, both the regular Minecraft server and CraftBukkit allow using full Unicode text in chat. Unfortunately, the Minecraft client comes with an older version of the LWJGL library which doesn't handle keyboard layouts properly. You will have to [manually update LWJGL](http://www.minecraftwiki.net/wiki/LWJGL) to the latest version, if you need Unicode support in chat.
-
 ### Forum & Downloads: ###
 For more information, discussions, and downloadable versions of the mod, see the [BetterFonts Thread](http://www.minecraftforum.net/topic/1142084-125-betterfonts-opentype-font-support/) on the Minecraft Forums.
 
@@ -45,8 +42,24 @@ F3 Debug Screen
 </tr>
 </table>
 
+### Requirements: ###
+[Minecraft Forge](http://files.minecraftforge.net/), 
+[CodeChickenCore](http://www.minecraftforum.net/topic/909223-/).
+
 ### Installation: ###
-Installation is the same as for any other mod. Extract the contents of the downloaded .zip file into your minecraft.jar, and make sure to delete the META-INF folder inside minecraft.jar. This mod is compatible with OptiFine and MCPatcher, but make sure to install it after either mod.
+Just put .jar into your mods directory.
+
+### Compiling: ###
+Download and extract minecraftforge-src to the basedir first.
+Do:
+```shell
+cd forge
+./install.sh|bat
+cd mcp
+./updatemd5.sh|bat
+```
+Put both CodeChickenCore and CodeChickenLib into forge/mcp/lib.
+Then run ant.
 
 ### Configuration: ###
 You can have a config file to change the default font and text size this mod uses. If your game is installed in a `.minecraft` directory, then the config file will be `.minecraft/config/BetterFonts.cfg` (the same place ModLoader keeps its config files). Please note that the `config` directory does **not go inside minecraft.jar** but directly into the game folder. You can either [download](http://dev.bukkit.org/media/files/587/923/BetterFonts_Config.zip) the config file or look at the example below:
