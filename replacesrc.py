@@ -12,8 +12,8 @@ def main():
                 print "Patching: {}".format(filepath)
                 with open(filepath) as f:
                     s = f.read()
-                s = s.replace("net/minecraft/client/gui/FontRenderer", "avf")
-                s = s.replace("net/minecraft/util/ResourceLocation", "bjl")
+                s = s.replace("net/minecraft/client/gui/FontRenderer", "avi")
+                s = s.replace("net/minecraft/util/ResourceLocation", "bjo")
                 s = s.replace("getResourcePath", "a")
                 s = s.replace("colorCode", "f")
                 s = s.replace("renderStringAtPos", "a")
@@ -23,8 +23,8 @@ def main():
                 s = s.replace("bidiReorder", "c")
                 s = s.replace("trimStringToWidth", "a")
                 s = s.replace("posX", "i")
-                s = s.replace("net/minecraft/client/settings/GameSettings", "aui")
-                s = s.replace("net/minecraft/client/renderer/texture/TextureManager", "bij")
+                s = s.replace("net/minecraft/client/settings/GameSettings", "aul")
+                s = s.replace("net/minecraft/client/renderer/texture/TextureManager", "bim")
                 with open(filepath, "w") as f:
                     f.write(s)
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="BetterFonts" default="build">
   <target name="buildenvsetup">
-    <property name="version.minecraft" value="1.6.2" />
+    <property name="version.minecraft" value="1.6.4" />
     <property name="mcp.home" location="${basedir}/forge/mcp" />
     <property name="bf.srcdir" location="${basedir}/src" />
     <property name="obf.bf.srcdir" location="${basedir}/src-obf" />
